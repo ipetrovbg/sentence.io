@@ -20,7 +20,7 @@ update msg model =
 view : Model -> Document Msg
 view model =
     { title = "Sentence.io - Home page"
-    , body = [ Html.h3 [] [Html.text "Sentence.io"] ]
+    , body = [ Html.h2 [] [Html.text "Sentence.io"] ]
     }
 
 
