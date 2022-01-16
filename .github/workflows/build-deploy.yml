@@ -1,7 +1,7 @@
 name: Build & deploy
 
 env:
-  NODE_VERSION: '14.16.1'
+  NODE_VERSION: '14.18.2'
 
 on:
   push:
@@ -12,6 +12,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: jorelali/setup-elm@v3
+        with:
+          elm-version: 0.19.1
       - uses: actions/checkout@v2
       - name: Cache .npm cache
         uses: actions/cache@v2
