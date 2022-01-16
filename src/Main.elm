@@ -19,8 +19,8 @@ update msg model =
 
 view : Model -> Document Msg
 view model =
-    { title = "Sentence.io"
-    , body = [ Html.text "Hello Sentence.io" ]
+    { title = "Sentence.io - Home page"
+    , body = [ Html.h3 [] [Html.text "Sentence.io"] ]
     }
 
 
