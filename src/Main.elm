@@ -16,9 +16,10 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     ( (), Cmd.none )
 
+
 view : Model -> Document Msg
 view model =
-    { title = "Sentence. io"
+    { title = "Sentence.io"
     , body = [ Html.text "Hello Sentence.io" ]
     }
 
