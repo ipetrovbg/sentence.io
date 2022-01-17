@@ -7,7 +7,7 @@
     "build": "webpack --config webpack.config.js",
     "start": "webpack-dev-server --config webpack.config.js",
     "start:dev": "echo y | npm run format && webpack-dev-server --config webpack-dev.config.js",
-    "format": "elm-format src"
+    "format": "echo y | elm-format src"
   },
   "author": "",
   "license": "ISC",
