@@ -31,11 +31,12 @@ module.exports = {
         path: path.resolve(__dirname, 'public'),
     },
     devServer: {
+        contentBase: "./src",
         inline: true,
-        stats: {colors: true},
+        stats: { colors: true },
         historyApiFallback: true,
     },
-    plugins: [new webpack.DefinePlugin({
+    plugins: [ new webpack.DefinePlugin({
         ENV: JSON.stringify('dev')
     })
     ],

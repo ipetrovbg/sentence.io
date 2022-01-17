@@ -1,41 +1,75 @@
 module Main exposing (..)
 
-import Browser exposing (Document)
-import Browser.Navigation exposing (Key)
+import Browser exposing (Document, UrlRequest(..))
+import Browser.Dom exposing (Error(..))
+import Browser.Navigation exposing (Key, load, pushUrl)
 import Element
 import Element.Font as Font
 import Element.Region as Region
-import Types exposing (Flags, Model, Msg(..))
+import HomePage
+import Html
+import NotFound
+import Router
+import Types exposing (Flags, Model, Msg(..), Route(..))
 import Url exposing (Url)
+import Url.Parser exposing (parse)
 import Utils exposing (edges)
 
 
 init : Flags -> Url -> Key -> ( Model, Cmd Msg )
 init flags url navKey =
-    ( (), Cmd.none )
+    let
+        ( homeInit, homeCmd ) =
+            HomePage.init ()
+    in
+    ( { route = parse Router.routeParser url
+      , home = homeInit
+      , navKey = navKey
+      }
+    , Cmd.batch
+        [ Cmd.map HomeMsg homeCmd
+        , Router.urlToCmd url
+        ]
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( (), Cmd.none )
+    case msg of
+        ChangeUrl url ->
+            ( { model | route = parse Router.routeParser url }, Router.urlToCmd url )
 
+        HomeMsg homeMsg ->
+            case homeMsg of
+                _ ->
+                    let
+                        ( homeModel, homeCmd ) =
+                            HomePage.update homeMsg model.home
+                    in
+                    ( { model | home = homeModel }, Cmd.map HomeMsg homeCmd )
 
-layoutView =
-    Element.layout [ Element.paddingEach edges ]
-        (Element.row
-            [ Region.heading 1
-            , Font.size 24
-            ]
-            [ Element.text "Sentence.io"
-            ]
-        )
+        ClickLink request ->
+            case request of
+                Internal url ->
+                    ( model, pushUrl model.navKey <| Url.toString url )
+
+                External url ->
+                    ( model, load url )
 
 
 view : Model -> Document Msg
 view model =
     { title = "Sentence.io"
     , body =
-        [ layoutView ]
+        [ case model.route of
+            Just route ->
+                case route of
+                    HomeRoute ->
+                        Html.map HomeMsg (HomePage.view model.home)
+
+            Nothing ->
+                NotFound.view
+        ]
     }
 
 
