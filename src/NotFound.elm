@@ -5,16 +5,21 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
+import Element.Region as Region
 import Html exposing (Html)
 import Utils
 
 
-blue =
-    Element.rgb255 26 48 92
+link =
+    Element.rgb255 6 66 235
 
 
 white =
     Element.rgb255 242 242 242
+
+
+error =
+    Element.rgb255 162 16 43
 
 
 purple =
@@ -30,23 +35,31 @@ view =
             , Element.centerY
             , Element.spacing 16
             ]
-            [ Element.el [ Element.centerY, Element.centerX, Font.size 220 ] <| Element.text "404"
-            , Element.el [ Element.centerY, Element.centerX ] <| Element.text "Page not found."
-            , Element.link [ Font.underline, Element.centerY, Element.centerX ]
+            [ Element.el
+                [ Element.centerY
+                , Element.centerX
+                , Font.size 220
+                , Font.color error
+                , Region.heading 1
+                , Font.extraBold
+                ]
+              <|
+                Element.text "404"
+            , Element.el
+                [ Element.centerY
+                , Element.centerX
+                ]
+              <|
+                Element.text "Oops! Page not found."
+            , Element.link
+                [ Element.centerY
+                , Element.centerX
+                , Font.size 14
+                , Font.color link
+                , Font.bold
+                ]
                 { url = "/"
                 , label = Element.text "Go Home"
                 }
-
-            --, Input.button
-            --    [ Background.color blue
-            --    , Border.rounded 8
-            --
-            --    --, Element.focused [ Background.color purple ]
-            --    , Element.paddingEach Utils.edges
-            --    , Font.color white
-            --    ]
-            --    { onPress = Nothing
-            --    , label = Element.text "My Button"
-            --    }
             ]
         )
