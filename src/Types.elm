@@ -37,14 +37,14 @@ type HomeMsg
 type alias HomeModel =
     { rowString : String
     , selectedWord : Maybe String
-    , sentence : Result (List DeadEnd) (List String)
+    , sentence : Result (List DeadEnd) (List ValidWord)
     }
 
 
 type ValidWord
-    = Numeric String
+    = Numeric String (Maybe String)
     | Alphabetic String (Maybe String)
-    | Punctuation String
+    | WordWithPunctuation String String
 
 
 type Msg

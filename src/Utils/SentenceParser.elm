@@ -1,19 +1,6 @@
 module Utils.SentenceParser exposing (..)
 
-import Parser
-    exposing
-        ( (|.)
-        , (|=)
-        , Parser
-        , Step(..)
-        , backtrackable
-        , chompIf
-        , chompWhile
-        , getChompedString
-        , loop
-        , oneOf
-        , succeed
-        )
+import Parser exposing ((|.), (|=), Parser, Step(..), backtrackable, chompIf, chompUntil, chompUntilEndOr, chompWhile, getChompedString, loop, oneOf, succeed, symbol)
 import Types exposing (ValidWord(..))
 
 
@@ -22,16 +9,22 @@ isIgnorable =
     not << Char.isAlphaNum
 
 
-numericWord : Parser ValidWord
-numericWord =
-    succeed Numeric
-        |. chompWhile isIgnorable
-        |= (getChompedString <|
-                succeed identity
-                    |. chompIf Char.isDigit
-                    |. chompWhile Char.isDigit
-           )
-        |. chompWhile isIgnorable
+
+--numericWord : Parser ValidWord
+--numericWord =
+--    succeed Numeric
+--        |. chompWhile isIgnorable
+--        |= (getChompedString <|
+--                succeed identity
+--                    |. chompIf Char.isDigit
+--                    |. chompWhile Char.isDigit
+--           )
+--        |. chompWhile isIgnorable
+
+
+whitespace : Parser ()
+whitespace =
+    chompWhile (\c -> c == ' ')
 
 
 contraction : Parser (Maybe String)
@@ -39,7 +32,6 @@ contraction =
     (getChompedString <|
         succeed identity
             |. chompIf ((==) '\'')
-            |. chompIf Char.isAlpha
             |. chompWhile Char.isAlpha
     )
         |> Parser.map Just
@@ -55,25 +47,23 @@ alphabeticWord =
                     |. chompWhile Char.isAlpha
            )
         |= oneOf [ backtrackable contraction, succeed Nothing ]
-        |. chompWhile isIgnorable
-
-
-charSeparatedNumWord : Parser ValidWord
-charSeparatedNumWord =
-    succeed Alphabetic
-        |. chompWhile isIgnorable
-        |= (getChompedString <|
-                succeed identity
-                    |. chompIf Char.isDigit
-                    |. chompWhile Char.isDigit
-           )
-        |= oneOf [ backtrackable contractionWithCharSeparator, succeed Nothing ]
-        |. chompWhile isIgnorable
 
 
 isValidCharSeparator : Char -> Bool
 isValidCharSeparator char =
     char == ',' || char == '.' || char == ':'
+
+
+isValidPunctuationSeparator : Char -> Bool
+isValidPunctuationSeparator char =
+    char
+        == '!'
+        || char
+        == '.'
+        || char
+        == '?'
+        || char
+        == ','
 
 
 contractionWithCharSeparator : Parser (Maybe String)
@@ -87,35 +77,57 @@ contractionWithCharSeparator =
         |> Parser.map Just
 
 
+charSeparatedNumWord : Parser ValidWord
+charSeparatedNumWord =
+    succeed Numeric
+        |. chompWhile isIgnorable
+        |= (getChompedString <|
+                succeed identity
+                    |. chompIf Char.isDigit
+                    |. chompWhile Char.isDigit
+           )
+        |= oneOf [ backtrackable contractionWithCharSeparator, succeed Nothing ]
+        |. chompWhile isIgnorable
+
+
+wordWithPunctuationHelper : Parser String
+wordWithPunctuationHelper =
+    getChompedString <|
+        succeed identity
+            |. chompIf isValidPunctuationSeparator
+
+
+wordWithPunctuation : Parser ValidWord
+wordWithPunctuation =
+    succeed WordWithPunctuation
+        |. chompWhile isIgnorable
+        |= (getChompedString <|
+                succeed identity
+                    |. chompIf Char.isAlphaNum
+                    |. chompWhile Char.isAlpha
+                    |. whitespace
+           )
+        |= backtrackable wordWithPunctuationHelper
+        |. chompWhile isIgnorable
+
+
 validWordHelper : List ValidWord -> Parser (Step (List ValidWord) (List ValidWord))
 validWordHelper revValidWords =
     oneOf
         [ succeed (\vw -> Loop (vw :: revValidWords))
             |= oneOf
                 [ backtrackable charSeparatedNumWord
+                , backtrackable wordWithPunctuation
                 , backtrackable alphabeticWord
-                , backtrackable numericWord
                 ]
         , succeed () |> Parser.map (\_ -> Done (List.reverse revValidWords))
         ]
 
 
-validWordToString : ValidWord -> String
-validWordToString vw =
-    case vw of
-        Numeric word ->
-            word
-
-        Alphabetic word contraction_ ->
-            contraction_
-                |> Maybe.withDefault ""
-                |> (++) word
-
-        Punctuation char ->
-            char
-
-
-validWord : Parser (List String)
+validWord : Parser (List ValidWord)
 validWord =
     loop [] validWordHelper
-        |> Parser.map (List.map validWordToString)
+
+
+
+--|> Parser.map (List.map validWordToString)
