@@ -1,7 +1,10 @@
 module NotFound exposing (..)
 
 import Element
+import Element.Background as Background
+import Element.Border as Border
 import Element.Font as Font
+import Element.Input as Input
 import Element.Region as Region
 import Html exposing (Html)
 import Utils.Color as Color
