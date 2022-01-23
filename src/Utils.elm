@@ -1,4 +1,6 @@
-module Utils exposing (edges)
+module Utils exposing (edges, perform)
+
+import Task
 
 
 edges =
@@ -7,3 +9,8 @@ edges =
     , bottom = 16
     , left = 16
     }
+
+
+perform : msg -> Cmd msg
+perform =
+    Task.perform identity << Task.succeed
