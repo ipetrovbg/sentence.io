@@ -9,14 +9,14 @@ import Element.Input as Input
 import Element.Region as Region
 import Html exposing (Html)
 import Parser
-import Types exposing (HomeModel, HomeMsg(..))
+import Types exposing (HomeModel, HomeMsg(..), ValidWord(..))
 import Utils
 import Utils.Color as Color
 import Utils.SentenceParser as SentenceParser
 
 
 initialRawString =
-    "Usually he runs 4.5 kilometers a day."
+    "Hello, What's on the TV at 8:30pm?"
 
 
 init : () -> ( HomeModel, Cmd HomeMsg )
@@ -83,7 +83,30 @@ view model =
                 (case model.sentence of
                     Ok words ->
                         words
-                            |> List.map (\w -> wordToView w model.selectedWord)
+                            |> List.map
+                                (\word ->
+                                    case word of
+                                        WordWithPunctuation w p ->
+                                            wordWithPunctuationView w p model.selectedWord
+
+                                        Alphabetic w c ->
+                                            let
+                                                wordWithContr =
+                                                    c
+                                                        |> Maybe.withDefault ""
+                                                        |> (++) w
+                                            in
+                                            selectableWordView wordWithContr model.selectedWord
+
+                                        Numeric numWord c ->
+                                            let
+                                                concatenatedNumWord =
+                                                    c
+                                                        |> Maybe.withDefault ""
+                                                        |> (++) numWord
+                                            in
+                                            plainWordView concatenatedNumWord
+                                )
 
                     Err _ ->
                         [ Element.none ]
@@ -92,11 +115,29 @@ view model =
         )
 
 
-wordToView : String -> Maybe String -> Element HomeMsg
-wordToView word maybeSelectedWord =
+wordWithPunctuationView : String -> String -> Maybe String -> Element HomeMsg
+wordWithPunctuationView word punctuation maybeSelectedWord =
+    Element.row []
+        [ selectableWordView word maybeSelectedWord
+        , Element.el [] <|
+            Element.text punctuation
+        ]
+
+
+plainWordView : String -> Element HomeMsg
+plainWordView word =
+    Element.el
+        [ Element.padding 8
+        ]
+    <|
+        Element.text word
+
+
+selectableWordView : String -> Maybe String -> Element HomeMsg
+selectableWordView word maybeSelectedWord =
     case maybeSelectedWord of
         Just selectedWord ->
-            case String.trim selectedWord == word of
+            case String.trim selectedWord == String.trim word of
                 True ->
                     Element.el
                         [ Element.padding 8
