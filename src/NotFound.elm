@@ -7,23 +7,7 @@ import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
 import Html exposing (Html)
-import Utils
-
-
-link =
-    Element.rgb255 6 66 235
-
-
-white =
-    Element.rgb255 242 242 242
-
-
-error =
-    Element.rgb255 162 16 43
-
-
-purple =
-    Element.rgb255 115 11 217
+import Utils.Color as Color
 
 
 view : Html msg
@@ -39,7 +23,7 @@ view =
                 [ Element.centerY
                 , Element.centerX
                 , Font.size 220
-                , Font.color error
+                , Font.color Color.error
                 , Region.heading 1
                 , Font.extraBold
                 ]
@@ -55,7 +39,7 @@ view =
                 [ Element.centerY
                 , Element.centerX
                 , Font.size 14
-                , Font.color link
+                , Font.color Color.primary
                 , Font.bold
                 ]
                 { url = "/"

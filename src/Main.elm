@@ -1,11 +1,7 @@
 module Main exposing (..)
 
 import Browser exposing (Document, UrlRequest(..))
-import Browser.Dom exposing (Error(..))
 import Browser.Navigation exposing (Key, load, pushUrl)
-import Element
-import Element.Font as Font
-import Element.Region as Region
 import HomePage
 import Html
 import NotFound
@@ -13,11 +9,10 @@ import Router
 import Types exposing (Flags, Model, Msg(..), Route(..))
 import Url exposing (Url)
 import Url.Parser exposing (parse)
-import Utils exposing (edges)
 
 
 init : Flags -> Url -> Key -> ( Model, Cmd Msg )
-init flags url navKey =
+init _ url navKey =
     let
         ( homeInit, homeCmd ) =
             HomePage.init ()

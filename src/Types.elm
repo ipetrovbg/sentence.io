@@ -1,7 +1,16 @@
-module Types exposing (Flags, HomeModel, HomeMsg(..), Model, Msg(..), Route(..))
+module Types exposing
+    ( Flags
+    , HomeModel
+    , HomeMsg(..)
+    , Model
+    , Msg(..)
+    , Route(..)
+    , ValidWord(..)
+    )
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
+import Parser exposing (DeadEnd)
 import Url exposing (Url)
 
 
@@ -21,11 +30,21 @@ type alias Model =
 
 
 type HomeMsg
-    = NoOp
+    = SelectWord String
+    | OnInputRawTextChange String
 
 
 type alias HomeModel =
-    ()
+    { rowString : String
+    , selectedWord : Maybe String
+    , sentence : Result (List DeadEnd) (List String)
+    }
+
+
+type ValidWord
+    = Numeric String
+    | Alphabetic String (Maybe String)
+    | Punctuation String
 
 
 type Msg
