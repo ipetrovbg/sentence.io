@@ -9,19 +9,6 @@ isIgnorable =
     not << Char.isAlphaNum
 
 
-
---numericWord : Parser ValidWord
---numericWord =
---    succeed Numeric
---        |. chompWhile isIgnorable
---        |= (getChompedString <|
---                succeed identity
---                    |. chompIf Char.isDigit
---                    |. chompWhile Char.isDigit
---           )
---        |. chompWhile isIgnorable
-
-
 whitespace : Parser ()
 whitespace =
     chompWhile (\c -> c == ' ')
@@ -127,7 +114,3 @@ validWordHelper revValidWords =
 validWord : Parser (List ValidWord)
 validWord =
     loop [] validWordHelper
-
-
-
---|> Parser.map (List.map validWordToString)
