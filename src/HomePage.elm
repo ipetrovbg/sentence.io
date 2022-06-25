@@ -16,7 +16,7 @@ import Utils.SentenceParser as SentenceParser
 
 
 initialRawString =
-    "Hello, What's on the TV at 8:30pm?"
+    "Hello! What's on TV at 8:30pm?"
 
 
 init : () -> ( HomeModel, Cmd HomeMsg )
